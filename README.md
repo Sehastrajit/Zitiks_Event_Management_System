@@ -2,6 +2,8 @@
 
 ZITIKS is an open-source event discovery and ticketing project built with Next.js. It includes event browsing, filtering, event details, interactive maps, and a booking flow with optional blockchain ticket issuance.
 
+The project is public and contributor-friendly. Anyone can inspect the code, fork it, open issues, submit pull requests, or adapt it under the MIT License.
+
 ## Features
 
 - Event browsing with search, category, date, location, and price filters
@@ -92,6 +94,17 @@ Good first contributions include:
 - Documentation fixes
 
 Pull requests run the frontend build through GitHub Actions.
+
+## Releases
+
+Release notes are tracked in [CHANGELOG.md](CHANGELOG.md). GitHub releases are created from semantic version tags:
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release workflow will generate GitHub release notes automatically.
 
 ## Security
 

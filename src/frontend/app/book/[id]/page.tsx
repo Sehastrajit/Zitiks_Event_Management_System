@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ChatBot from "@/components/ChatBot";
 import BookingButton from "./BookingButton";
 import EventLocationMap from "./EventLocationMap";
 import Footer from "@/components/Footer";
@@ -296,6 +297,9 @@ export default async function EventDetailsPage({
       </section>
 
       <Footer />
+      <ChatBot
+        pageContext={`Event detail page for ${event.title}. Category: ${event.type}. Venue: ${event.location}, ${event.city}. Date: ${event.date}. Price: ${event.price}. Description: ${event.description ?? "No description provided."}`}
+      />
     </>
   );
 }

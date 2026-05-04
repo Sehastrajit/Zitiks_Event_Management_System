@@ -41,17 +41,39 @@ export default function AboutPage() {
         >
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-[#f5d27a]/60">
-              About Us
+              Open Source
             </p>
             <h1 className="text-5xl font-bold leading-tight md:text-7xl">
-              Built for the{" "}
-              <span className="text-[#f5d27a]">experience</span>
+              Built in the{" "}
+              <span className="text-[#f5d27a]">open</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-white/55">
               ZITIKS is a blockchain-powered event ticketing platform that combines
               premium event discovery with secure, on-chain ticket issuance. Every ticket
               is a verifiable credential that is immutable, transferable, and fraud-proof.
             </p>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/45">
+              The source code is public under the MIT License so developers can study it,
+              fork it, open issues, and contribute improvements through pull requests.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <Link
+                href="https://github.com/Sehastrajit/Zitiks_Event_Management_System"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-[#f5d27a] px-6 py-3 text-sm font-semibold text-black transition hover:bg-white"
+              >
+                View Source
+              </Link>
+              <Link
+                href="https://github.com/Sehastrajit/Zitiks_Event_Management_System/issues"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-black"
+              >
+                Open Issues
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -70,6 +92,10 @@ export default function AboutPage() {
               {
                 title: "Premium Discovery",
                 body: "Real-time geolocation, interactive maps, and filtered browsing make finding the right event effortless.",
+              },
+              {
+                title: "Open Contributions",
+                body: "Issues, pull requests, release notes, and contributor docs are set up so anyone can help improve the project.",
               },
             ].map(({ title, body }) => (
               <div key={title} className="rounded-3xl border border-white/10 bg-white/[0.03] p-8">

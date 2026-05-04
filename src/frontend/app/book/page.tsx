@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { ComponentType } from "react";
+import ChatBot from "@/components/ChatBot";
 import Footer from "@/components/Footer";
 import EventMapBase from "./EventMapDynamic";
 import MapErrorBoundary from "./MapErrorBoundary";
@@ -377,6 +378,7 @@ export default function BookPage() {
         </section>
       </main>
 
+      <ChatBot pageContext="Browse page with all ZITIKS events, filters, map, and booking links." />
       <Footer />
     </>
   );

@@ -18,3 +18,5 @@ __pycache__/
 
 # Logs
 *.log
+src/frontend/.env.example
+src/frontend/.env.local
