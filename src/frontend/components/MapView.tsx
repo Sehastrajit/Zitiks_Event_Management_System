@@ -13,7 +13,7 @@ export default function MapView() {
   const [geoData, setGeoData] = useState<any>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/power-lines")
+    fetch("/api/power-lines")
       .then((res) => res.json())
       .then((data) => setGeoData(data))
       .catch((err) => console.error("Failed to load power lines:", err));

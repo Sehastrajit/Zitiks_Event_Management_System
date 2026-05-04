@@ -13,8 +13,6 @@ const EventMap = EventMapBase as ComponentType<{
   userLocation: { lat: number; lng: number };
 }>;
 
-const API_BASE_URL = "http://localhost:8000";
-
 const eventTypes = ["All", "Concert", "Conference", "Shows", "Workshop"];
 const priceFilters = ["All", "Free", "Under $30", "$30-$50", "$50+"] as const;
 
@@ -100,7 +98,7 @@ export default function BookPage() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/events`);
+        const res = await fetch("/api/events");
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setEvents(data);

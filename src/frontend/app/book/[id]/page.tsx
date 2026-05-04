@@ -3,30 +3,10 @@ import { notFound } from "next/navigation";
 import BookingButton from "./BookingButton";
 import EventLocationMap from "./EventLocationMap";
 import Footer from "@/components/Footer";
+import { events } from "@/lib/events";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
-
-type EventItem = {
-  id: number;
-  title: string;
-  type: string;
-  location: string;
-  city: string;
-  date: string;
-  price: string;
-  lat: number;
-  lng: number;
-  description?: string;
-};
-
-async function getEvent(id: string): Promise<EventItem | null> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events/${id}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+function getEvent(id: string) {
+  return events.find((event) => event.id === Number(id)) ?? null;
 }
 
 const typeStyles: Record<string, { accent: string; heroBg: string }> = {
@@ -112,7 +92,7 @@ export default async function EventDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const event = await getEvent(id);
+  const event = getEvent(id);
   if (!event) notFound();
 
   const style = typeStyles[event.type] ?? { accent: "#f5d27a", heroBg: "rgba(40,40,40,0.22)" };
