@@ -11,24 +11,70 @@ type Props = {
   title: string;
   location: string;
   city: string;
+  type?: string;
 };
 
-export default function EventLocationMap({ lat, lng, title, location, city }: Props) {
-  const [mounted, setMounted] = useState(false);
+const categoryStyles: Record<string, { bg: string; border: string; emoji: string }> = {
+  Concert:    { bg: "linear-gradient(135deg, #7f1d1d, #b45309)", border: "#f5d27a", emoji: "🎵" },
+  Conference: { bg: "linear-gradient(135deg, #0f172a, #1e3a8a)", border: "#93c5fd", emoji: "🎤" },
+  Shows:      { bg: "linear-gradient(135deg, #2e1065, #7e22ce)", border: "#d8b4fe", emoji: "🎭" },
+  Workshop:   { bg: "linear-gradient(135deg, #064e3b, #166534)", border: "#86efac", emoji: "🛠️" },
+};
+
+function createEventIcon(type: string) {
+  const s = categoryStyles[type] ?? {
+    bg: "linear-gradient(135deg, #262626, #525252)",
+    border: "#d4d4d4",
+    emoji: "📍",
+  };
+
+  return L.divIcon({
+    className: "",
+    iconSize: [34, 42],
+    iconAnchor: [17, 40],
+    popupAnchor: [0, -36],
+    html: `
+      <div style="position:relative;width:34px;height:42px;cursor:pointer">
+        <div style="
+          position:absolute;left:50%;top:4px;
+          width:32px;height:32px;
+          transform:translateX(-50%) rotate(45deg);
+          border-radius:13px 13px 13px 3px;
+          background:${s.bg};
+          border:1.5px solid ${s.border};
+          box-shadow:0 12px 24px rgba(0,0,0,0.38),inset 0 1px 0 rgba(255,255,255,0.22);
+        "></div>
+        <div style="
+          position:absolute;left:50%;top:8px;
+          width:26px;height:26px;
+          transform:translateX(-50%);
+          border-radius:9999px;
+          background:rgba(255,255,255,0.12);
+          border:1px solid rgba(255,255,255,0.2);
+          display:flex;align-items:center;justify-content:center;
+          font-size:14px;
+        ">${s.emoji}</div>
+        <div style="
+          position:absolute;left:50%;bottom:0;
+          width:7px;height:7px;
+          transform:translateX(-50%);
+          border-radius:9999px;
+          background:${s.border};
+          box-shadow:0 0 12px ${s.border};
+        "></div>
+      </div>
+    `,
+  });
+}
+
+export default function EventLocationMap({ lat, lng, title, location, city, type = "Concert" }: Props) {
+  const [icon, setIcon] = useState<L.DivIcon | null>(null);
 
   useEffect(() => {
-    // Fix Leaflet default icon paths (broken in bundler environments)
-    const proto = L.Icon.Default.prototype as L.Icon.Default & { _getIconUrl?: unknown };
-    delete proto._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-    });
-    setMounted(true);
-  }, []);
+    setIcon(createEventIcon(type));
+  }, [type]);
 
-  if (!mounted) {
+  if (!icon) {
     return <div className="h-full w-full animate-pulse bg-neutral-900" />;
   }
 
@@ -36,9 +82,7 @@ export default function EventLocationMap({ lat, lng, title, location, city }: Pr
     <div className="h-full w-full">
       <style>{`
         .leaflet-container { background: #0a0a0a; font-family: inherit; }
-        .leaflet-tile {
-          filter: grayscale(0.92) contrast(1.1) brightness(0.56) sepia(0.08);
-        }
+        .leaflet-tile { filter: brightness(0.88) contrast(1.05); }
         .leaflet-popup-content-wrapper {
           border-radius: 18px;
           background: rgba(10,10,10,0.96);
@@ -82,7 +126,7 @@ export default function EventLocationMap({ lat, lng, title, location, city }: Pr
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
 
-        <Marker position={[lat, lng]}>
+        <Marker position={[lat, lng]} icon={icon}>
           <Popup>
             <div className="px-4 py-3">
               <p className="font-semibold text-white">{title}</p>

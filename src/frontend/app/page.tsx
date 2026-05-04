@@ -83,7 +83,7 @@ export default function Home() {
             key={videos[current].title}
             className="flex animate-[fadeUp_0.7s_ease-out] flex-col items-center gap-6"
           >
-            <h1 className="text-6xl font-bold text-white">
+            <h1 className="text-9xl font-bold text-white">
               {videos[current].title}
             </h1>
 

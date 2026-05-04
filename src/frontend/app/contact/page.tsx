@@ -25,7 +25,7 @@ export default function ContactPage() {
       <main className="min-h-screen bg-neutral-950 text-white">
         {/* nav */}
         <nav className="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/90 px-8 py-5 backdrop-blur">
-          <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             <Link href="/" className="text-2xl font-bold">
               ZITIKS
             </Link>

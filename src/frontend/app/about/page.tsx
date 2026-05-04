@@ -40,7 +40,7 @@ export default function AboutPage() {
       <main className="min-h-screen bg-neutral-950 text-white">
         {/* nav */}
         <nav className="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/90 px-8 py-5 backdrop-blur">
-          <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             <Link href="/" className="text-2xl font-bold">
               ZITIKS
             </Link>
@@ -74,7 +74,7 @@ export default function AboutPage() {
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-white/55">
               ZITIKS is a blockchain-powered event ticketing platform that combines
               premium event discovery with secure, on-chain ticket issuance. Every ticket
-              is a verifiable credential — immutable, transferable, and fraud-proof.
+              is a verifiable credential that is immutable, transferable, and fraud-proof.
             </p>
           </div>
         </section>
@@ -85,7 +85,7 @@ export default function AboutPage() {
             {[
               {
                 title: "On-Chain Tickets",
-                body: "Every booking issues a real ERC-style credential stored on a local Ethereum node — not a database record.",
+                body: "Every booking issues a real ERC-style credential stored on a local Ethereum node, not a database record.",
               },
               {
                 title: "Fraud-Proof",

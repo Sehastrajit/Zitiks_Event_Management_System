@@ -8,7 +8,7 @@ export default function Footer() {
           <div>
             <p className="text-2xl font-bold tracking-tight text-[#f5d27a]">ZITIKS</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/50">
-              Premium event experiences — concerts, conferences, shows, and workshops.
+              Premium event experiences for concerts, conferences, shows, and workshops.
             </p>
           </div>
 
