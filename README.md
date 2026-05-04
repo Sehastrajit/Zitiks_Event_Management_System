@@ -83,6 +83,16 @@ Without these variables, the booking API can return mock tickets for demo use.
 
 Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
+Good first contributions include:
+
+- UI polish and accessibility improvements
+- Event creation workflow improvements
+- Map interaction improvements
+- Test coverage
+- Documentation fixes
+
+Pull requests run the frontend build through GitHub Actions.
+
 ## Security
 
 Please report security issues privately using the instructions in [SECURITY.md](SECURITY.md).

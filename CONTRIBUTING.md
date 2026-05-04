@@ -23,6 +23,16 @@ npm.cmd run build
 - Include screenshots for UI changes when possible.
 - Avoid committing secrets, `.env` files, build output, or dependency folders.
 - Update documentation when behavior or setup steps change.
+- Link related issues in the pull request description when applicable.
+- Make sure the GitHub Actions build passes before requesting review.
+
+## Suggested Workflow
+
+1. Fork the repository.
+2. Create a branch from `main`.
+3. Make your changes.
+4. Run `npm.cmd run build` from `src/frontend`.
+5. Open a pull request with a clear summary and testing notes.
 
 ## Code Style
 
