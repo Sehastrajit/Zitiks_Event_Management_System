@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZITIKS Premium Event Ticketing",
+  title: "ZITIKS",
   description: "Book concerts, conferences, shows, and workshops near you.",
 };
 
