@@ -42,14 +42,19 @@ export default function Footer() {
 
           <div>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/35">
-              Built by
+              Developer
             </p>
             <ul className="space-y-2 text-sm">
-              <li className="text-white/55">Sehastrajit Selvachandran </li>
-              <li className="text-white/55">Manya Mehta</li>
-              <li className="text-white/55">Samyogita Bhandari</li>
-              <li className="text-white/55">Reshikesh Reddy Puttamreddy</li>
-              <li className="text-white/55">Nandan Reddy Jalli</li>
+              <li>
+                <Link
+                  href="https://www.linkedin.com/in/sehastrajit-s/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white/55 transition hover:text-[#f5d27a]"
+                >
+                  Sehastrajit Selvachandran
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

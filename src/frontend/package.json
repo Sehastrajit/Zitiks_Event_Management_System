@@ -1,7 +1,13 @@
 {
-  "name": "frontend",
+  "name": "zitiks-event-management-system",
   "version": "0.1.0",
-  "private": true,
+  "description": "Open-source event discovery and ticketing app built with Next.js.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sehastrajit/Zitiks_Event_Management_System.git"
+  },
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",

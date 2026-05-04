@@ -4,33 +4,9 @@ import Footer from "@/components/Footer";
 const team = [
   {
     name: "Sehastrajit Selvachandran",
-    role: "Lead Developer",
-    bio: "Architected the full-stack system blockchain smart contracts, Next.js frontend, and API integration. Leads technical direction across the entire project.",
-    lead: true,
-  },
-  {
-    name: "Manya Mehta",
-    role: "Frontend Developer",
-    bio: "Built the event browsing experience, search and filter logic, and the interactive map interface using React Leaflet.",
-    lead: false,
-  },
-  {
-    name: "Samyogita Bhandari",
-    role: "UI/UX Designer & Developer",
-    bio: "Designed the visual language and component system. Responsible for the dark luxury aesthetic, animations, and user flow.",
-    lead: false,
-  },
-  {
-    name: "Reshikesh Reddy Puttamreddy",
-    role: "Blockchain Developer",
-    bio: "Developed and tested the Solidity smart contracts for on-chain ticket issuance, credential management, and event registry.",
-    lead: false,
-  },
-  {
-    name: "Nandan Reddy Jalli",
-    role: "Backend Developer",
-    bio: "Built the REST API layer that bridges the frontend event discovery with the blockchain ticketing system.",
-    lead: false,
+    role: "Developer",
+    bio: "Designed and built ZITIKS across the Next.js frontend, event discovery experience, interactive maps, API routes, and blockchain ticketing integration.",
+    linkedin: "https://www.linkedin.com/in/sehastrajit-s/",
   },
 ];
 
@@ -109,49 +85,38 @@ export default function AboutPage() {
         <section className="px-8 py-24">
           <div className="mx-auto max-w-6xl">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[#f5d27a]/60">
-              The Team
+              Developer
             </p>
             <h2 className="mb-14 text-4xl font-bold md:text-5xl">Who built this</h2>
 
-            {/* lead card */}
-            {team
-              .filter((m) => m.lead)
-              .map((member) => (
-                <div
-                  key={member.name}
-                  className="mb-8 rounded-3xl border border-[#f5d27a]/20 bg-gradient-to-br from-[#f5d27a]/[0.07] to-white/[0.02] p-10"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <p className="text-2xl font-bold text-white md:text-3xl">
-                        {member.name}
-                      </p>
-                      <p className="mt-2 flex items-center gap-2">
-                        <span className="rounded-full border border-[#f5d27a]/35 bg-[#f5d27a]/10 px-3 py-1 text-xs font-semibold text-[#f5d27a]">
-                          {member.role}
-                        </span>
-                      </p>
-                    </div>
+            {team.map((member) => (
+              <div
+                key={member.name}
+                className="mb-8 rounded-3xl border border-[#f5d27a]/20 bg-gradient-to-br from-[#f5d27a]/[0.07] to-white/[0.02] p-10"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-2xl font-bold text-white md:text-3xl">
+                      {member.name}
+                    </p>
+                    <p className="mt-2 flex items-center gap-2">
+                      <span className="rounded-full border border-[#f5d27a]/35 bg-[#f5d27a]/10 px-3 py-1 text-xs font-semibold text-[#f5d27a]">
+                        {member.role}
+                      </span>
+                    </p>
                   </div>
-                  <p className="mt-6 max-w-2xl leading-8 text-white/60">{member.bio}</p>
                 </div>
-              ))}
-
-            {/* rest of team grid */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              {team
-                .filter((m) => !m.lead)
-                .map((member) => (
-                  <div
-                    key={member.name}
-                    className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition hover:border-white/20 hover:bg-white/[0.05]"
-                  >
-                    <p className="text-lg font-bold text-white">{member.name}</p>
-                    <p className="mt-2 text-sm font-medium text-white/40">{member.role}</p>
-                    <p className="mt-4 text-sm leading-7 text-white/55">{member.bio}</p>
-                  </div>
-                ))}
-            </div>
+                <p className="mt-6 max-w-2xl leading-8 text-white/60">{member.bio}</p>
+                <Link
+                  href={member.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-8 inline-flex rounded-full border border-[#f5d27a]/35 px-5 py-2 text-sm font-semibold text-[#f5d27a] transition hover:bg-[#f5d27a] hover:text-black"
+                >
+                  LinkedIn
+                </Link>
+              </div>
+            ))}
           </div>
         </section>
       </main>
