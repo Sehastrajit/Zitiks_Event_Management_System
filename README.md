@@ -9,6 +9,7 @@ The project is public and contributor-friendly. Anyone can inspect the code, for
 - Event browsing with search, category, date, location, and price filters
 - Event detail pages with schedule timelines and location maps
 - Create-event interface for organizer workflows
+- Groq-powered chat assistant on browse and event detail pages
 - Next.js API routes for event and map data
 - Optional blockchain ticketing integration through `ethers`
 - Responsive dark UI built with Tailwind CSS
@@ -81,6 +82,16 @@ EMS_ORGANIZER_KEY=
 
 Without these variables, the booking API can return mock tickets for demo use.
 
+The chatbot is optional. Configure one of these server-side variables:
+
+```env
+GROQ_API_KEY=
+groq_api=
+GROQ_MODEL=llama-3.1-8b-instant
+```
+
+Do not commit real `.env.local` files or API keys.
+
 ## Contributing
 
 Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
@@ -100,11 +111,13 @@ Pull requests run the frontend build through GitHub Actions.
 Release notes are tracked in [CHANGELOG.md](CHANGELOG.md). GitHub releases are created from semantic version tags:
 
 ```powershell
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.0
+git push origin v0.2.0
 ```
 
 The release workflow will generate GitHub release notes automatically.
+
+Maintainer release steps are documented in [RELEASING.md](RELEASING.md).
 
 ## Security
 
