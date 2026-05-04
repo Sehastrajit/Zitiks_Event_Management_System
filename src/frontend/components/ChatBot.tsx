@@ -162,9 +162,22 @@ export default function ChatBot({ pageContext }: Props) {
         type="button"
         onClick={open ? () => setOpen(false) : openChat}
         aria-label={open ? "Hide ZITIKS chat" : "Open ZITIKS chat"}
-        className="grid h-14 w-14 place-items-center rounded-full bg-[#f5d27a] text-2xl font-semibold text-black shadow-2xl transition hover:bg-white"
+        className="grid h-14 w-14 place-items-center overflow-hidden rounded-full border border-[#f5d27a]/40 bg-[#f5d27a] p-1 shadow-2xl transition hover:bg-white"
+        style={
+          open
+            ? undefined
+            : {
+                backgroundImage: "url('/assets/ai.png')",
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }
+        }
       >
-        {open ? "×" : "?"}
+        {open ? (
+          <span className="text-2xl font-semibold leading-none text-black">&times;</span>
+        ) : (
+          <span className="sr-only">Open ZITIKS chat</span>
+        )}
       </button>
     </div>
   );
