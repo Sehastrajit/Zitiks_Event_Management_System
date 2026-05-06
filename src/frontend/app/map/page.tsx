@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 
@@ -48,25 +49,42 @@ export default function MapPage() {
   };
 
   return (
-    <main className="h-screen w-full">
-      <MapContainer
-        center={[33.4484, -112.074]}
-        zoom={11}
-        className="h-full w-full"
-      >
-        <TileLayer
-          attribution="&copy; OpenStreetMap contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-
-        {geoData && (
-          <GeoJSON
-            data={geoData}
-            style={lineStyle}
-            onEachFeature={onEachFeature}
+    <>
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-white/10 px-8 py-5 backdrop-blur">
+        <div className="flex w-full items-center justify-between">
+          <Link href="/" className="text-2xl font-bold">
+            ZITIKS
+          </Link>
+          <div className="flex items-center gap-6 text-sm">
+            <Link href="/book" className="text-white/70 hover:text-white">
+              Browse
+            </Link>
+            <Link href="/about" className="text-white/70 hover:text-white">
+              About
+            </Link>
+          </div>
+        </div>
+      </nav>
+      <main className="h-screen w-full text-white" style={{ background: "radial-gradient(circle_at_center,#6d28d9,#050008_65%)" }}>
+        <MapContainer
+          center={[33.4484, -112.074]}
+          zoom={11}
+          className="h-full w-full"
+        >
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-        )}
-      </MapContainer>
-    </main>
+
+          {geoData && (
+            <GeoJSON
+              data={geoData}
+              style={lineStyle}
+              onEachFeature={onEachFeature}
+            />
+          )}
+        </MapContainer>
+      </main>
+    </>
   );
 }

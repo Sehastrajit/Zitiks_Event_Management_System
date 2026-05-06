@@ -11,10 +11,10 @@ function getEvent(id: string) {
 }
 
 const typeStyles: Record<string, { accent: string; heroBg: string }> = {
-  Concert:    { accent: "#f5d27a", heroBg: "rgba(120,40,10,0.22)" },
-  Conference: { accent: "#93c5fd", heroBg: "rgba(10,30,80,0.22)"  },
-  Shows:      { accent: "#d8b4fe", heroBg: "rgba(60,10,100,0.22)" },
-  Workshop:   { accent: "#86efac", heroBg: "rgba(5,60,30,0.22)"   },
+  Concert:    { accent: "#6d28d9", heroBg: "rgba(109,40,217,0.1)" },
+  Conference: { accent: "#6d28d9", heroBg: "rgba(109,40,217,0.1)"  },
+  Shows:      { accent: "#6d28d9", heroBg: "rgba(109,40,217,0.1)" },
+  Workshop:   { accent: "#6d28d9", heroBg: "rgba(109,40,217,0.1)"   },
 };
 
 const eventDetailsByType: Record<
@@ -103,17 +103,15 @@ export default async function EventDetailsPage({
     <>
       {/* ─── HERO ──────────────────────────────────────────────────── */}
       <section
-        className="relative min-h-screen bg-neutral-950 px-8 pb-20 pt-8"
-        style={{
-          background: `radial-gradient(ellipse 90% 55% at 60% -10%, ${style.heroBg}, transparent 70%), #0a0a0a`,
-        }}
+        className="relative min-h-screen px-8 pb-20 pt-8 text-white"
+        style={{ background: "radial-gradient(circle_at_center,#6d28d9,#050008_65%)" }}
       >
         {/* nav */}
         <nav className="mb-14 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-white">
+          <Link href="/" className="text-2xl font-bold">
             ZITIKS
           </Link>
-          <Link href="/book" className="text-sm text-white/55 hover:text-white">
+          <Link href="/book" className="text-sm text-white/70 hover:text-white">
             Browse Events
           </Link>
         </nav>
@@ -121,7 +119,7 @@ export default async function EventDetailsPage({
         <div className="mx-auto max-w-6xl">
           <Link
             href="/book"
-            className="inline-flex items-center gap-2 text-sm text-white/45 transition hover:text-white"
+            className="inline-flex items-center gap-2 text-sm text-white/50 transition hover:text-white"
           >
             ← Back to events
           </Link>
@@ -129,22 +127,17 @@ export default async function EventDetailsPage({
           {/* badges */}
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <span
-              className="rounded-full border px-4 py-1.5 text-sm font-medium"
-              style={{
-                color: style.accent,
-                borderColor: `${style.accent}44`,
-                backgroundColor: `${style.accent}14`,
-              }}
+              className="rounded-full border border-purple-600/35 bg-purple-600/10 px-4 py-1.5 text-sm font-medium text-purple-400"
             >
               {event.type}
             </span>
-            <span className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-1.5 text-sm text-white/55">
+            <span className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-sm text-white/70">
               {event.date}
             </span>
           </div>
 
           {/* title */}
-          <h1 className="mt-6 max-w-4xl text-5xl font-bold leading-[1.08] tracking-tight text-white md:text-7xl lg:text-[5.5rem]">
+          <h1 className="mt-6 max-w-4xl text-5xl font-bold leading-[1.08] tracking-tight md:text-7xl lg:text-[5.5rem]">
             {event.title}
           </h1>
 
@@ -158,8 +151,7 @@ export default async function EventDetailsPage({
 
           {/* price */}
           <p
-            className="mt-4 text-4xl font-bold md:text-5xl"
-            style={{ color: style.accent }}
+            className="mt-4 text-4xl font-bold md:text-5xl text-purple-400"
           >
             {event.price}
           </p>
@@ -173,7 +165,7 @@ export default async function EventDetailsPage({
             />
             <Link
               href="/book"
-              className="rounded-full border border-white/15 px-8 py-3 font-semibold text-white transition hover:bg-white hover:text-black"
+              className="rounded-full border border-white/15 px-8 py-3 font-semibold text-white transition hover:bg-purple-600 hover:text-white"
             >
               View More Events
             </Link>
@@ -182,11 +174,11 @@ export default async function EventDetailsPage({
       </section>
 
       {/* ─── DETAILS + DESCRIPTION ────────────────────────────────── */}
-      <section className="bg-neutral-950 px-6 py-20 md:px-12">
+      <section className="px-6 py-20 md:px-12 text-white" style={{ background: "radial-gradient(circle_at_center,#6d28d9,#050008_65%)" }}>
         <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[1fr_300px]">
           {/* description */}
           <div>
-            <h2 className="mb-6 text-2xl font-bold text-white">About this Event</h2>
+            <h2 className="mb-6 text-2xl font-bold">About this Event</h2>
             <p className="max-w-3xl text-lg leading-9 text-white/60">
               {event.description ?? "No description provided for this event."}
             </p>
@@ -202,7 +194,7 @@ export default async function EventDetailsPage({
                   key={highlight}
                   className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
                 >
-                  <p className="text-sm font-semibold text-white">{highlight}</p>
+                  <p className="text-sm font-semibold">{highlight}</p>
                 </div>
               ))}
             </div>
@@ -230,7 +222,7 @@ export default async function EventDetailsPage({
                   <dt className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-white/30">
                     {label}
                   </dt>
-                  <dd className="text-sm font-medium text-white">{value}</dd>
+                  <dd className="text-sm font-medium">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -239,27 +231,26 @@ export default async function EventDetailsPage({
       </section>
 
       {/* ─── LOCATION MAP ─────────────────────────────────────────── */}
-      <section className="bg-neutral-950 px-6 pb-20 md:px-12">
+      <section className="px-6 pb-20 md:px-12 text-white" style={{ background: "radial-gradient(circle_at_center,#6d28d9,#050008_65%)" }}>
         <div className="mx-auto max-w-6xl">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/30">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-purple-400/60">
             Schedule
           </p>
-          <h2 className="mb-10 text-3xl font-bold text-white">Event Timeline</h2>
+          <h2 className="mb-10 text-3xl font-bold">Event Timeline</h2>
 
           <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
             <div className="space-y-8">
               {eventInfo.timeline.map((item, index) => (
                 <div key={`${item.time}-${item.title}`} className="grid gap-4 md:grid-cols-[110px_1fr]">
-                  <div className="text-sm font-semibold" style={{ color: style.accent }}>
+                  <div className="text-sm font-semibold text-purple-400">
                     {item.time}
                   </div>
                   <div className="relative border-l border-white/10 pl-6">
                     <span
-                      className="absolute -left-[7px] top-1 h-3.5 w-3.5 rounded-full"
-                      style={{ backgroundColor: style.accent }}
+                      className="absolute -left-[7px] top-1 h-3.5 w-3.5 rounded-full bg-purple-600"
                     />
-                    <h3 className="text-lg font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 max-w-3xl text-sm leading-6 text-white/55">
+                    <h3 className="text-lg font-semibold">{item.title}</h3>
+                    <p className="mt-2 max-w-3xl text-sm leading-6 text-white/60">
                       {item.description}
                     </p>
                     {index < eventInfo.timeline.length - 1 && (
@@ -273,12 +264,12 @@ export default async function EventDetailsPage({
         </div>
       </section>
 
-      <section className="bg-[#0d0d0d] px-6 py-20 md:px-12">
+      <section className="px-6 py-20 md:px-12 text-white" style={{ background: "radial-gradient(circle_at_center,#6d28d9,#050008_65%)" }}>
         <div className="mx-auto max-w-6xl">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/30">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-purple-400/60">
             Location
           </p>
-          <h2 className="mb-1 text-3xl font-bold text-white">Find Us</h2>
+          <h2 className="mb-1 text-3xl font-bold">Find Us</h2>
           <p className="mb-8 text-white/50">
             {event.location}, {event.city}
           </p>

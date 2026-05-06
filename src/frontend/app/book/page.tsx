@@ -154,8 +154,8 @@ export default function BookPage() {
 
   return (
     <>
-      <main className="min-h-screen bg-neutral-950 text-white">
-        <nav className="sticky top-0 z-50 border-b border-white/10 bg-neutral-950/90 px-8 py-5 backdrop-blur">
+      <main className="min-h-screen text-white" style={{ background: "radial-gradient(circle_at_center,#6d28d9,#050008_65%)" }}>
+        <nav className="sticky top-0 z-50 border-b border-white/10 bg-white/10 px-8 py-5 backdrop-blur">
           <div className="flex w-full items-center justify-between">
             <Link href="/" className="text-2xl font-bold">
               ZITIKS
@@ -167,7 +167,7 @@ export default function BookPage() {
               </Link>
               <Link
                 href="/book/create"
-                className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-[#f5d27a]"
+                className="rounded-full bg-purple-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-purple-700"
               >
                 Create Event
               </Link>
@@ -177,7 +177,7 @@ export default function BookPage() {
                   event.preventDefault();
                   updateMapVisibility(!showMap);
                 }}
-                className="rounded-full border border-[#f5d27a]/30 px-5 py-2 text-sm text-[#f5d27a] transition hover:bg-[#f5d27a] hover:text-black"
+                className="rounded-full border border-purple-600/30 px-5 py-2 text-sm text-purple-400 transition hover:bg-purple-600 hover:text-white"
               >
                 Map
               </button>
@@ -197,7 +197,7 @@ export default function BookPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search concerts, conferences, shows..."
-              className="w-full rounded-2xl border border-white/10 bg-black/40 px-5 py-4 text-white outline-none placeholder:text-white/35 focus:border-[#f5d27a]/50"
+              className="w-full rounded-2xl border border-white/10 bg-black/40 px-5 py-4 text-white outline-none placeholder:text-white/35 focus:border-purple-600/50"
             />
 
             <div className="mt-4 flex flex-wrap gap-3">
@@ -208,7 +208,7 @@ export default function BookPage() {
                   onClick={() => setActiveType(type)}
                   className={`rounded-full px-5 py-2 text-sm transition ${
                     activeType === type
-                      ? "bg-[#f5d27a] text-black"
+                      ? "bg-purple-600 text-white"
                       : "bg-white/10 text-white/75 hover:bg-white/20 hover:text-white"
                   }`}
                 >
@@ -219,7 +219,7 @@ export default function BookPage() {
           </div>
 
           {showMap && (
-            <div className="mb-8 overflow-hidden rounded-3xl border border-[#f5d27a]/15 bg-white/[0.04] shadow-2xl">
+            <div className="mb-8 overflow-hidden rounded-3xl border border-purple-600/15 bg-white/[0.04] shadow-2xl">
               <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
                 <div>
                   <h2 className="font-semibold">
@@ -271,7 +271,7 @@ export default function BookPage() {
                     name="date-filter"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-[#f5d27a]/50"
+                    className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-purple-600/50"
                   >
                     {dates.map((date) => (
                       <option key={date} value={date} className="bg-neutral-950">
@@ -288,7 +288,7 @@ export default function BookPage() {
                     name="location-filter"
                     value={selectedLocation}
                     onChange={(e) => setSelectedLocation(e.target.value)}
-                    className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-[#f5d27a]/50"
+                    className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-purple-600/50"
                   >
                     {locations.map((location) => (
                       <option key={location} value={location} className="bg-neutral-950">
@@ -308,7 +308,7 @@ export default function BookPage() {
                         onClick={() => setSelectedPrice(price)}
                         className={`rounded-2xl border px-4 py-3 text-left text-sm transition ${
                           selectedPrice === price
-                            ? "border-[#f5d27a]/60 bg-[#f5d27a]/15 text-[#f5d27a]"
+                            ? "border-purple-600/60 bg-purple-600/15 text-purple-400"
                             : "border-white/10 bg-black/25 text-white/65 hover:border-white/20 hover:text-white"
                         }`}
                       >
@@ -334,7 +334,7 @@ export default function BookPage() {
                 {filteredEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:-translate-y-1 hover:border-[#f5d27a]/30 hover:bg-white/[0.07]"
+                    className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 transition hover:-translate-y-1 hover:border-purple-600/30 hover:bg-white/[0.07]"
                   >
                     <div className="mb-4 flex items-center justify-between">
                       {(() => {
@@ -362,10 +362,10 @@ export default function BookPage() {
                     <p className="mt-3 text-sm text-white/40">{event.distance.toFixed(1)} miles away</p>
 
                     <div className="mt-6 flex items-center justify-between">
-                      <span className="text-lg font-semibold text-[#f5d27a]">{event.price}</span>
+                      <span className="text-lg font-semibold text-purple-400">{event.price}</span>
                       <Link
                         href={`/book/${event.id}`}
-                        className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition hover:bg-[#f5d27a]"
+                        className="rounded-full bg-purple-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-purple-700"
                       >
                         Book Now
                       </Link>

@@ -1,6 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+
+const stripePromise =
+  typeof process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === "string" &&
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.length > 0
+    ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+    : null;
 
 type Props = {
   eventId: number;
@@ -8,38 +21,134 @@ type Props = {
   eventPrice: string;
 };
 
-type BookingResult = {
-  ticketId: string;
-  issuedAt: string;
-};
+type Step = "details" | "payment" | "success";
+
+function CheckoutForm({
+  onSuccess,
+  onBack,
+}: {
+  onSuccess: (ticketId: string) => void;
+  onBack: () => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handlePay(e: React.FormEvent) {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setLoading(true);
+    setError("");
+
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      setError(submitError.message ?? "Submission failed");
+      setLoading(false);
+      return;
+    }
+
+    const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      redirect: "if_required",
+    });
+
+    if (confirmError) {
+      setError(confirmError.message ?? "Payment failed. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    if (paymentIntent?.status === "succeeded") {
+      try {
+        const res = await fetch("/api/confirm-ticket", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentIntentId: paymentIntent.id }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error ?? "Ticket confirmation failed");
+        onSuccess(data.ticketId);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Ticket confirmation failed");
+      }
+    } else {
+      setError("Payment did not complete. Please try again.");
+    }
+
+    setLoading(false);
+  }
+
+  return (
+    <form onSubmit={handlePay} className="space-y-5">
+      <PaymentElement
+        options={{
+          wallets: { applePay: "auto", googlePay: "auto" },
+          layout: "tabs",
+        }}
+      />
+      {error && (
+        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+      <div className="flex gap-3 pt-1">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex-1 rounded-full border border-gray-300 py-3 font-semibold text-black transition hover:bg-gray-50"
+        >
+          Back
+        </button>
+        <button
+          type="submit"
+          disabled={loading || !stripe}
+          className="flex-1 rounded-full bg-purple-600 py-3 font-semibold text-white transition hover:bg-purple-700 disabled:opacity-50"
+        >
+          {loading ? "Processing…" : "Pay Now"}
+        </button>
+      </div>
+    </form>
+  );
+}
 
 export default function BookingButton({ eventId, eventTitle, eventPrice }: Props) {
   const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<Step>("details");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [ticketId, setTicketId] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<BookingResult | null>(null);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleDetailsSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!email.trim() && !phone.trim()) {
+      setError("Please enter an email or phone number to receive your ticket.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      const res = await fetch("/api/book", {
+      const res = await fetch("/api/payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventId, name: name.trim(), email: email.trim() }),
+        body: JSON.stringify({
+          eventId,
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+        }),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error ?? "Booking failed");
-      }
-
-      setResult(data);
+      if (!res.ok) throw new Error(data.error ?? "Failed to initialise payment");
+      setClientSecret(data.clientSecret);
+      setStep("payment");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -47,19 +156,41 @@ export default function BookingButton({ eventId, eventTitle, eventPrice }: Props
     }
   }
 
+  function handleSuccess(tid: string) {
+    setTicketId(tid);
+    setStep("success");
+  }
+
   function closeModal() {
     setOpen(false);
-    setResult(null);
+    setStep("details");
     setName("");
     setEmail("");
+    setPhone("");
+    setClientSecret("");
+    setTicketId("");
     setError("");
   }
+
+  const elementsOptions = clientSecret
+    ? {
+        clientSecret,
+        appearance: {
+          theme: "stripe" as const,
+          variables: {
+            colorPrimary: "#9333ea",
+            borderRadius: "12px",
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+          },
+        },
+      }
+    : undefined;
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-full bg-[#f5d27a] px-8 py-3 font-semibold text-black transition hover:bg-white"
+        className="rounded-full bg-purple-600 px-8 py-3 font-semibold text-white transition hover:bg-purple-700"
       >
         Confirm Booking
       </button>
@@ -69,61 +200,88 @@ export default function BookingButton({ eventId, eventTitle, eventPrice }: Props
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
           onClick={(e) => e.target === e.currentTarget && closeModal()}
         >
-          <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-neutral-950 p-8 shadow-2xl">
-            {result ? (
+          <div className="w-full max-w-md rounded-[2rem] border border-gray-200 bg-white p-8 shadow-2xl">
+
+            {step === "success" && (
               <>
                 <div className="mb-6 text-center">
-                  <div className="mb-3 text-5xl text-[#f5d27a]">✓</div>
-                  <h2 className="text-2xl font-bold">Booking Confirmed</h2>
-                  <p className="mt-1 text-sm text-white/55">
-                    Your ticket has been issued.
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl text-green-600">
+                    ✓
+                  </div>
+                  <h2 className="text-2xl font-bold text-black">Booking Confirmed</h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Your ticket has been issued
+                    {email ? " and emailed to you" : phone ? " via SMS" : ""}.
                   </p>
                 </div>
 
-                <div className="space-y-3 rounded-2xl border border-[#f5d27a]/20 bg-[#f5d27a]/5 p-5">
+                <div className="space-y-3 rounded-2xl border border-purple-200 bg-purple-50 p-5">
                   <div>
-                    <p className="text-xs text-white/45">Ticket ID</p>
-                    <p className="mt-0.5 font-mono text-sm text-[#f5d27a]">
-                      {result.ticketId}
+                    <p className="text-xs text-gray-400">Ticket ID</p>
+                    <p className="mt-0.5 font-mono text-base font-semibold text-purple-700">
+                      {ticketId}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-white/45">Event</p>
-                    <p className="mt-0.5 text-sm text-white">{eventTitle}</p>
+                    <p className="text-xs text-gray-400">Event</p>
+                    <p className="mt-0.5 text-sm font-medium text-black">{eventTitle}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-white/45">Name</p>
-                    <p className="mt-0.5 text-sm text-white">{name}</p>
+                    <p className="text-xs text-gray-400">Name</p>
+                    <p className="mt-0.5 text-sm text-black">{name}</p>
                   </div>
-                  <div>
-                    <p className="text-xs text-white/45">Email</p>
-                    <p className="mt-0.5 text-sm text-white">{email}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-white/45">Issued At</p>
-                    <p className="mt-0.5 text-sm text-white">
-                      {new Date(result.issuedAt).toLocaleString()}
-                    </p>
-                  </div>
+                  {email && (
+                    <div>
+                      <p className="text-xs text-gray-400">Confirmation sent to</p>
+                      <p className="mt-0.5 text-sm text-black">{email}</p>
+                    </div>
+                  )}
+                  {!email && phone && (
+                    <div>
+                      <p className="text-xs text-gray-400">SMS sent to</p>
+                      <p className="mt-0.5 text-sm text-black">{phone}</p>
+                    </div>
+                  )}
                 </div>
 
                 <button
                   onClick={closeModal}
-                  className="mt-6 w-full rounded-full border border-white/15 py-3 font-semibold text-white transition hover:bg-white hover:text-black"
+                  className="mt-6 w-full rounded-full bg-purple-600 py-3 font-semibold text-white transition hover:bg-purple-700"
                 >
-                  Close
+                  Done
                 </button>
               </>
-            ) : (
-              <>
-                <h2 className="mb-1 text-2xl font-bold">Confirm Booking</h2>
-                <p className="mb-6 text-sm text-white/55">
-                  {eventTitle} &mdash; {eventPrice}
-                </p>
+            )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+            {step === "payment" && clientSecret && elementsOptions && (
+              <>
+                <div className="mb-5">
+                  <h2 className="text-2xl font-bold text-black">Payment</h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {eventTitle} &mdash; {eventPrice}
+                  </p>
+                </div>
+                <Elements stripe={stripePromise} options={elementsOptions}>
+                  <CheckoutForm
+                    onSuccess={handleSuccess}
+                    onBack={() => setStep("details")}
+                  />
+                </Elements>
+              </>
+            )}
+
+            {step === "details" && (
+              <>
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-black">Get your ticket</h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {eventTitle} &mdash; {eventPrice} &nbsp;·&nbsp; No account needed
+                  </p>
+                </div>
+
+                <form onSubmit={handleDetailsSubmit} className="space-y-4">
                   <div>
-                    <label className="mb-1.5 block text-sm text-white/60">
+                    <label className="mb-1.5 block text-sm font-medium text-gray-600">
                       Full Name
                     </label>
                     <input
@@ -131,48 +289,65 @@ export default function BookingButton({ eventId, eventTitle, eventPrice }: Props
                       onChange={(e) => setName(e.target.value)}
                       required
                       placeholder="Your name"
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-white/30 focus:border-[#f5d27a]/50"
+                      className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-black outline-none placeholder:text-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-1.5 block text-sm text-white/60">
+                    <label className="mb-1.5 block text-sm font-medium text-gray-600">
                       Email
                     </label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      required
                       placeholder="your@email.com"
-                      className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-white/30 focus:border-[#f5d27a]/50"
+                      className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-black outline-none placeholder:text-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10"
                     />
                   </div>
 
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-600">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+1 555 123 4567"
+                      className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-black outline-none placeholder:text-gray-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/10"
+                    />
+                    <p className="mt-1.5 text-xs text-gray-400">
+                      Enter email, phone, or both — your ticket will be sent there.
+                    </p>
+                  </div>
+
                   {error && (
-                    <p className="text-sm text-red-400">{error}</p>
+                    <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">
+                      {error}
+                    </p>
                   )}
 
                   <div className="flex gap-3 pt-2">
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 rounded-full border border-white/15 py-3 font-semibold text-white transition hover:bg-white hover:text-black"
+                      className="flex-1 rounded-full border border-gray-300 py-3 font-semibold text-black transition hover:bg-gray-50"
                     >
                       Cancel
                     </button>
-
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 rounded-full bg-[#f5d27a] py-3 font-semibold text-black transition hover:bg-white disabled:opacity-50"
+                      className="flex-1 rounded-full bg-purple-600 py-3 font-semibold text-white transition hover:bg-purple-700 disabled:opacity-50"
                     >
-                      {loading ? "Booking..." : "Confirm"}
+                      {loading ? "Loading…" : "Continue to Payment"}
                     </button>
                   </div>
                 </form>
               </>
             )}
+
           </div>
         </div>
       )}

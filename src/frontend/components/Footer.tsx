@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-12 sm:grid-cols-3">
           <div>
-            <p className="text-2xl font-bold tracking-tight text-[#f5d27a]">ZITIKS</p>
+            <p className="text-2xl font-bold tracking-tight text-purple-400">ZITIKS</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/50">
               Premium event experiences for concerts, conferences, shows, and workshops.
             </p>
@@ -50,7 +50,7 @@ export default function Footer() {
                   href="https://www.linkedin.com/in/sehastrajit-s/"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-white/55 transition hover:text-[#f5d27a]"
+                  className="text-white/55 transition hover:text-purple-400"
                 >
                   Sehastrajit Selvachandran
                 </Link>
