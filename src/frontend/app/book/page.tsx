@@ -171,12 +171,6 @@ export default function BookPage() {
               <Link href="/movies" className="text-sm text-white/70 hover:text-white">
                 Movies
               </Link>
-              <Link
-                href="/book/create"
-                className="rounded-full bg-purple-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-purple-700"
-              >
-                Create Event
-              </Link>
               <button
                 type="button"
                 onClick={(event) => {
