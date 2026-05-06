@@ -7,6 +7,7 @@ import ChatBot from "@/components/ChatBot";
 import Footer from "@/components/Footer";
 import EventMapBase from "./EventMapDynamic";
 import MapErrorBoundary from "./MapErrorBoundary";
+import { US_STATES, STATE_CODES, parseState, parseCityName } from "@/lib/us-locations";
 
 // Cast after static import — avoids the dynamic import() path TS can't resolve from this file
 const EventMap = EventMapBase as ComponentType<{
@@ -75,7 +76,8 @@ export default function BookPage() {
   const [search, setSearch] = useState("");
   const [activeType, setActiveType] = useState("All");
   const [selectedDate, setSelectedDate] = useState("All");
-  const [selectedLocation, setSelectedLocation] = useState("All");
+  const [selectedState, setSelectedState] = useState("All");
+  const [selectedCity, setSelectedCity] = useState("All");
   const [selectedPrice, setSelectedPrice] = useState<PriceFilter>("All");
   const [showMap, setShowMap] = useState(false);
   const [userLocation, setUserLocation] = useState({ lat: 33.4255, lng: -111.94 });
@@ -125,9 +127,7 @@ export default function BookPage() {
     return ["All", ...Array.from(new Set(events.map((event) => event.date)))];
   }, [events]);
 
-  const locations = useMemo(() => {
-    return ["All", ...Array.from(new Set(events.map((event) => event.city)))];
-  }, [events]);
+
 
   const filteredEvents: EventWithDistance[] = useMemo(() => {
     return events
@@ -142,15 +142,18 @@ export default function BookPage() {
           event.location.toLowerCase().includes(s) ||
           event.city.toLowerCase().includes(s) ||
           event.type.toLowerCase().includes(s);
-        const matchesType = activeType === "All" || event.type === activeType;
-        const matchesDate = selectedDate === "All" || event.date === selectedDate;
-        const matchesLocation = selectedLocation === "All" || event.city === selectedLocation;
+        const matchesType  = activeType === "All" || event.type === activeType;
+        const matchesDate  = selectedDate === "All" || event.date === selectedDate;
+        const eventState   = parseState(event.city);
+        const eventCity    = parseCityName(event.city);
+        const matchesState = selectedState === "All" || eventState === selectedState;
+        const matchesCity  = selectedCity === "All"  || eventCity === selectedCity;
         const matchesPrice = matchesPriceFilter(event.price, selectedPrice);
 
-        return matchesSearch && matchesType && matchesDate && matchesLocation && matchesPrice;
+        return matchesSearch && matchesType && matchesDate && matchesState && matchesCity && matchesPrice;
       })
       .sort((a, b) => a.distance - b.distance);
-  }, [events, search, activeType, selectedDate, selectedLocation, selectedPrice, userLocation]);
+  }, [events, search, activeType, selectedDate, selectedState, selectedCity, selectedPrice, userLocation]);
 
   return (
     <>
@@ -164,6 +167,9 @@ export default function BookPage() {
             <div className="flex items-center gap-6">
               <Link href="/" className="text-sm text-white/70 hover:text-white">
                 Home
+              </Link>
+              <Link href="/movies" className="text-sm text-white/70 hover:text-white">
+                Movies
               </Link>
               <Link
                 href="/book/create"
@@ -254,7 +260,8 @@ export default function BookPage() {
                   type="button"
                   onClick={() => {
                     setSelectedDate("All");
-                    setSelectedLocation("All");
+                    setSelectedState("All");
+                    setSelectedCity("All");
                     setSelectedPrice("All");
                   }}
                   className="text-sm text-white/45 transition hover:text-white"
@@ -282,21 +289,36 @@ export default function BookPage() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium text-white/70">Location</span>
+                  <span className="mb-2 block text-sm font-medium text-white/70">State</span>
                   <select
-                    id="location-filter"
-                    name="location-filter"
-                    value={selectedLocation}
-                    onChange={(e) => setSelectedLocation(e.target.value)}
+                    value={selectedState}
+                    onChange={(e) => { setSelectedState(e.target.value); setSelectedCity("All"); }}
                     className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-purple-600/50"
                   >
-                    {locations.map((location) => (
-                      <option key={location} value={location} className="bg-neutral-950">
-                        {location === "All" ? "All locations" : location}
+                    <option value="All" className="bg-neutral-950">All States</option>
+                    {STATE_CODES.map((code) => (
+                      <option key={code} value={code} className="bg-neutral-950">
+                        {US_STATES[code].name}
                       </option>
                     ))}
                   </select>
                 </label>
+
+                {selectedState !== "All" && (
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-medium text-white/70">City</span>
+                    <select
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                      className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none focus:border-purple-600/50"
+                    >
+                      <option value="All" className="bg-neutral-950">All Cities</option>
+                      {(US_STATES[selectedState]?.cities ?? []).map((c) => (
+                        <option key={c} value={c} className="bg-neutral-950">{c}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
 
                 <fieldset>
                   <legend className="mb-2 text-sm font-medium text-white/70">Price</legend>

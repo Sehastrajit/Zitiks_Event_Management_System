@@ -11,11 +11,12 @@ function formatTicketId(paymentIntentId: string): string {
 function buildTicketEmail(
   ticketId: string,
   guestName: string,
-  event: EventItem | undefined
+  event: EventItem | undefined,
+  overrides?: { title?: string; date?: string; location?: string }
 ): string {
-  const title = event?.title ?? "Your Event";
-  const date = event?.date ?? "TBD";
-  const location = event ? `${event.location}, ${event.city}` : "TBD";
+  const title = overrides?.title ?? event?.title ?? "Your Event";
+  const date = overrides?.date ?? event?.date ?? "TBD";
+  const location = overrides?.location ?? (event ? `${event.location}, ${event.city}` : "TBD");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -149,14 +150,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ticketId });
   }
 
-  const { eventId, name, email, phone } = pi.metadata ?? {};
+  const { eventId, eventTitle, eventDate, eventLocation, name, email, phone } = pi.metadata ?? {};
   const event = events.find((e) => e.id === Number(eventId));
 
-  const emailHtml = buildTicketEmail(ticketId, name ?? "Guest", event);
-  const smsBody = `ZITIKS: Your ticket ${ticketId} for ${event?.title ?? "the event"} on ${event?.date ?? "TBD"} is confirmed. See you there!`;
+  const displayTitle = event?.title ?? eventTitle ?? "Your Event";
+  const displayDate  = event?.date ?? eventDate ?? "TBD";
+  const displayLocation = event ? `${event.location}, ${event.city}` : (eventLocation ?? "TBD");
+
+  const emailHtml = buildTicketEmail(ticketId, name ?? "Guest", event, { title: displayTitle, date: displayDate, location: displayLocation });
+  const smsBody = `ZITIKS: Your ticket ${ticketId} for ${displayTitle} on ${displayDate} is confirmed. See you there!`;
 
   await Promise.allSettled([
-    email ? sendEmail(email, `Your ZITIKS ticket — ${event?.title ?? "Event"}`, emailHtml) : Promise.resolve(),
+    email ? sendEmail(email, `Your ZITIKS ticket — ${displayTitle}`, emailHtml) : Promise.resolve(),
     phone ? sendSms(phone, smsBody) : Promise.resolve(),
   ]);
 
