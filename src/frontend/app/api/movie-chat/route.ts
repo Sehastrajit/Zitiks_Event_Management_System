@@ -1,23 +1,24 @@
 import { NextResponse } from "next/server";
-import { events, EventItem } from "@/lib/events";
+import { movies, Movie } from "@/lib/movies";
 
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
 };
 
-function findRelevantEvents(reply: string): EventItem[] {
-  const replyLower = reply.toLowerCase();
-  return events
-    .filter((event) => replyLower.includes(event.title.toLowerCase()))
-    .slice(0, 6);
-}
-
-const eventSummary = events
-  .map((event) => {
-    return `${event.id}. ${event.title} (${event.type}) at ${event.location}, ${event.city} on ${event.date}, ${event.price}. ${event.description}`;
+const movieSummary = movies
+  .map((m) => {
+    const times = m.showtimes.map((s) => `${s.time} (${s.format}${s.available ? "" : " – sold out"})`).join(", ");
+    return `${m.id}. ${m.title} (${m.genre.join("/")}, ${m.rating}) – ${m.duration}, ${m.year}, dir. ${m.director}. ${m.price} at ${m.theater}, ${m.city}, ${m.state}. Showtimes: ${times}. ${m.description}`;
   })
   .join("\n");
+
+function findRelevantMovies(reply: string): Movie[] {
+  const replyLower = reply.toLowerCase();
+  return movies
+    .filter((m) => replyLower.includes(m.title.toLowerCase()))
+    .slice(0, 6);
+}
 
 function getGroqApiKey() {
   return (
@@ -64,20 +65,20 @@ export async function POST(req: Request) {
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "Groq API key is not configured. Add groq_api or GROQ_API_KEY to .env.local." },
+      { error: "Groq API key is not configured." },
       { status: 500 }
     );
   }
 
-  const systemPrompt = `You are the ZITIKS event assistant.
-Help users browse events, compare options, understand booking, and answer questions about the current page.
-Be concise, practical, and friendly. Do not invent events that are not listed.
+  const systemPrompt = `You are the ZITIKS movie assistant.
+Help users find movies, check showtimes, compare options, and answer booking questions.
+Be concise, practical, and friendly. Only mention movies from the list below. Do not invent movies.
 
-Available events:
-${eventSummary}
+Available movies:
+${movieSummary}
 
 Current page context:
-${pageContext?.slice(0, 1200) || "Browse page"}`;
+${pageContext?.slice(0, 1200) || "Movies browse page"}`;
 
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
@@ -111,10 +112,10 @@ ${pageContext?.slice(0, 1200) || "Browse page"}`;
     return NextResponse.json({ error: "Groq returned an empty response" }, { status: 502 });
   }
 
-  const matchedEvents = findRelevantEvents(reply.trim());
+  const matchedMovies = findRelevantMovies(reply.trim());
 
   return NextResponse.json({
     reply: reply.trim(),
-    events: matchedEvents.length > 0 ? matchedEvents : undefined,
+    movies: matchedMovies.length > 0 ? matchedMovies : undefined,
   });
 }

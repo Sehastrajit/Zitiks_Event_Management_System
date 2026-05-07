@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ChatBot from "@/components/ChatBot";
 import BookingButton from "./BookingButton";
-import EventLocationMap from "./EventLocationMap";
+import EventLocationMap from "./EventLocationMapWrapper";
 import Footer from "@/components/Footer";
 import { events } from "@/lib/events";
 

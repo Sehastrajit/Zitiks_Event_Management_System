@@ -27,7 +27,7 @@ export const movies: Movie[] = [
     year: 2024,
     director: "Denis Villeneuve",
     description: "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against those who destroyed his family, as dark forces brew.",
-    trailerYoutubeId: "Way9Alt8wFE",
+    trailerYoutubeId: "Way9Dexny3w",
     price: "$18",
     theater: "AMC Tempe Marketplace 16",
     city: "Tempe",

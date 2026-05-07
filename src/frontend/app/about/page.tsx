@@ -5,7 +5,7 @@ const team = [
   {
     name: "Sehastrajit Selvachandran",
     role: "Developer",
-    bio: "Designed and built ZITIKS across the Next.js frontend, event discovery experience, interactive maps, API routes, and blockchain ticketing integration.",
+    bio: "Designed and built ZITIKS — a full-stack Next.js platform covering event and movie discovery, interactive Leaflet maps, an AI chat assistant (Groq), Stripe payments, and on-chain blockchain ticketing.",
     linkedin: "https://www.linkedin.com/in/sehastrajit-s/",
   },
 ];
@@ -42,9 +42,9 @@ export default function AboutPage() {
               <span className="text-purple-400">open</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-white/55">
-              ZITIKS is a blockchain-powered event ticketing platform that combines
-              premium event discovery with secure, on-chain ticket issuance. Every ticket
-              is a verifiable credential that is immutable, transferable, and fraud-proof.
+              ZITIKS is a full-stack event and movie ticketing platform combining premium
+              discovery, an AI-powered chat assistant, interactive maps, Stripe payments,
+              and blockchain-backed ticket issuance — all in one open-source codebase.
             </p>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/45">
               The source code is public under the MIT License so developers can study it,
@@ -73,7 +73,7 @@ export default function AboutPage() {
 
         {/* mission */}
         <section className="border-y border-white/10 bg-white/[0.02] px-8 py-20">
-          <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-3">
+          <div className="mx-auto grid max-w-6xl gap-12 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 title: "On-Chain Tickets",
@@ -84,8 +84,16 @@ export default function AboutPage() {
                 body: "Cryptographic credential hashes prevent counterfeiting. Gate verification checks the hash against the on-chain record.",
               },
               {
-                title: "Premium Discovery",
-                body: "Real-time geolocation, interactive maps, and filtered browsing make finding the right event effortless.",
+                title: "Event & Movie Discovery",
+                body: "Browse events and movies with real-time geolocation, interactive Leaflet maps, and multi-filter browsing by city, type, and price.",
+              },
+              {
+                title: "AI Chat Assistant",
+                body: "An embedded AI chatbot powered by Groq helps users find events and movies, compare options, and get booking guidance instantly.",
+              },
+              {
+                title: "Stripe Payments",
+                body: "Secure card payments via Stripe with payment-intent confirmation and a smooth booking flow built on top of the Stripe Elements SDK.",
               },
               {
                 title: "Open Contributions",

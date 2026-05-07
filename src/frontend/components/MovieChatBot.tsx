@@ -1,22 +1,28 @@
 "use client";
 
 import { FormEvent, useRef, useMemo, useState } from "react";
-import type { EventItem } from "@/lib/events";
+import type { Movie } from "@/lib/movies";
 
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
-  events?: EventItem[];
+  movies?: Movie[];
 };
 
-const typeColors: Record<string, { bg: string; text: string }> = {
-  Concert: { bg: "#f5d27a", text: "#000" },
-  Conference: { bg: "#93c5fd", text: "#000" },
-  Shows: { bg: "#d8b4fe", text: "#000" },
-  Workshop: { bg: "#86efac", text: "#000" },
+const genreColors: Record<string, { bg: string; text: string }> = {
+  "Action":    { bg: "#fb923c", text: "#000" },
+  "Sci-Fi":    { bg: "#67e8f9", text: "#000" },
+  "Drama":     { bg: "#fcd34d", text: "#000" },
+  "Comedy":    { bg: "#86efac", text: "#000" },
+  "Thriller":  { bg: "#f87171", text: "#fff" },
+  "Adventure": { bg: "#a5f3fc", text: "#000" },
+  "Crime":     { bg: "#d4d4d8", text: "#000" },
+  "History":   { bg: "#fef08a", text: "#000" },
+  "Romance":   { bg: "#fca5a5", text: "#000" },
 };
+const defaultMovieColor = { bg: "#c4b5fd", text: "#000" };
 
-function CardScroller({ events }: { events: EventItem[] }) {
+function MovieCardScroller({ movies }: { movies: Movie[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   function scroll(dir: -1 | 1) {
@@ -39,11 +45,12 @@ function CardScroller({ events }: { events: EventItem[] }) {
         className="flex flex-1 gap-2 overflow-x-auto pb-1"
         style={{ scrollbarWidth: "none" }}
       >
-        {events.map((event) => {
-          const color = typeColors[event.type] ?? { bg: "#f5d27a", text: "#000" };
+        {movies.map((movie) => {
+          const firstGenre = movie.genre[0] ?? "";
+          const color = genreColors[firstGenre] ?? defaultMovieColor;
           return (
             <div
-              key={event.id}
+              key={movie.id}
               className="flex-shrink-0 w-[148px] rounded-xl border border-white/10 bg-black/50 overflow-hidden"
             >
               <div className="px-3 pt-3 pb-2">
@@ -51,21 +58,21 @@ function CardScroller({ events }: { events: EventItem[] }) {
                   className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full mb-1.5"
                   style={{ background: color.bg, color: color.text }}
                 >
-                  {event.type}
+                  {firstGenre}
                 </span>
                 <p className="text-xs font-semibold text-white leading-snug line-clamp-2">
-                  {event.title}
+                  {movie.title}
                 </p>
-                <p className="text-[10px] text-white/45 mt-1 truncate">{event.location}</p>
-                <p className="text-[10px] text-white/35 truncate">{event.city}</p>
+                <p className="text-[10px] text-white/45 mt-1 truncate">{movie.theater}</p>
+                <p className="text-[10px] text-white/35 truncate">{movie.city}, {movie.state}</p>
               </div>
               <div className="flex items-center justify-between border-t border-white/10 px-3 py-2">
                 <div>
-                  <p className="text-[10px] text-white/40">{event.date}</p>
-                  <p className="text-xs font-bold text-white/80">{event.price}</p>
+                  <p className="text-[10px] text-white/40">{movie.rating} · {movie.duration}</p>
+                  <p className="text-xs font-bold text-white/80">{movie.price}</p>
                 </div>
                 <a
-                  href={`/book/${event.id}`}
+                  href={`/movies/${movie.id}`}
                   className="text-[10px] font-semibold px-2.5 py-1 rounded-full transition hover:opacity-80"
                   style={{ background: color.bg, color: color.text }}
                 >
@@ -93,13 +100,13 @@ type Props = {
   pageContext: string;
 };
 
-export default function ChatBot({ pageContext }: Props) {
+export default function MovieChatBot({ pageContext }: Props) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: "Hi, I can help you find events, compare tickets, or answer booking questions.",
+      content: "Hi, I can help you find movies, check showtimes, or answer booking questions.",
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -125,7 +132,7 @@ export default function ChatBot({ pageContext }: Props) {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/api/movie-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -142,7 +149,7 @@ export default function ChatBot({ pageContext }: Props) {
 
       setMessages((current) => [
         ...current,
-        { role: "assistant", content: data.reply, events: data.events },
+        { role: "assistant", content: data.reply, movies: data.movies },
       ]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Chat request failed");
@@ -167,11 +174,11 @@ export default function ChatBot({ pageContext }: Props) {
   return (
     <div className="fixed bottom-5 right-5 z-[70]">
       {open && (
-        <div className="mb-4 flex h-[520px] w-[min(380px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-3xl border border-white/10 bg-neutral-950 shadow-2xl">
-          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div className="mb-4 flex h-[520px] w-[min(380px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-3xl border border-purple-500/20 bg-neutral-950 shadow-2xl">
+          <div className="flex items-center justify-between border-b border-purple-500/20 px-5 py-4">
             <div>
-              <h2 className="text-sm font-semibold text-white">ZITIKS Assistant</h2>
-              <p className="text-xs text-white/45">Ask about events and booking</p>
+              <h2 className="text-sm font-semibold text-white">ZITIKS Movies</h2>
+              <p className="text-xs text-white/45">Ask about movies and showtimes</p>
             </div>
             <button
               type="button"
@@ -189,8 +196,8 @@ export default function ChatBot({ pageContext }: Props) {
                 key={`${message.role}-${index}`}
                 className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
                   message.role === "user"
-                    ? "ml-8 bg-[#f5d27a] text-black"
-                    : "mr-8 border border-white/10 bg-white/[0.04] text-white/75"
+                    ? "ml-8 bg-purple-600 text-white"
+                    : "mr-8 border border-purple-500/20 bg-purple-500/[0.06] text-white/75"
                 }`}
               >
                 <div className="space-y-2">
@@ -198,13 +205,13 @@ export default function ChatBot({ pageContext }: Props) {
                     <p key={lineIndex}>{line}</p>
                   ))}
                 </div>
-                {message.events && message.events.length > 0 && (
-                  <CardScroller events={message.events} />
+                {message.movies && message.movies.length > 0 && (
+                  <MovieCardScroller movies={message.movies} />
                 )}
               </div>
             ))}
             {loading && (
-              <div className="mr-8 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/45">
+              <div className="mr-8 rounded-2xl border border-purple-500/20 bg-purple-500/[0.06] px-4 py-3 text-sm text-white/45">
                 Thinking...
               </div>
             )}
@@ -216,21 +223,21 @@ export default function ChatBot({ pageContext }: Props) {
             </p>
           )}
 
-          <form onSubmit={handleSubmit} className="border-t border-white/10 p-3">
+          <form onSubmit={handleSubmit} className="border-t border-purple-500/20 p-3">
             <div className="flex gap-2">
               <input
                 ref={inputRef}
-                id="chat-message"
-                name="chat-message"
+                id="movie-chat-message"
+                name="movie-chat-message"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Ask about events..."
-                className="min-w-0 flex-1 rounded-full border border-white/10 bg-black/35 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-[#f5d27a]/50"
+                placeholder="Ask about movies..."
+                className="min-w-0 flex-1 rounded-full border border-white/10 bg-black/35 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple-500/50"
               />
               <button
                 type="submit"
                 disabled={loading || input.trim().length === 0}
-                className="rounded-full bg-[#f5d27a] px-5 py-3 text-sm font-semibold text-black transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-full bg-purple-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Send
               </button>
@@ -242,22 +249,15 @@ export default function ChatBot({ pageContext }: Props) {
       <button
         type="button"
         onClick={open ? () => setOpen(false) : openChat}
-        aria-label={open ? "Hide ZITIKS chat" : "Open ZITIKS chat"}
-        className="grid h-14 w-14 place-items-center overflow-hidden rounded-full border border-[#f5d27a]/40 bg-[#f5d27a] p-1 shadow-2xl transition hover:bg-white"
-        style={
-          open
-            ? undefined
-            : {
-                backgroundImage: "url('/assets/ai.png')",
-                backgroundPosition: "center",
-                backgroundSize: "cover",
-              }
-        }
+        aria-label={open ? "Hide movies chat" : "Open movies chat"}
+        className="grid h-14 w-14 place-items-center rounded-full bg-white shadow-2xl transition hover:bg-purple-50 border-2 border-purple-400"
       >
         {open ? (
-          <span className="text-2xl font-semibold leading-none text-black">&times;</span>
+          <span className="text-2xl font-semibold leading-none text-purple-600">&times;</span>
         ) : (
-          <span className="sr-only">Open ZITIKS chat</span>
+          <svg className="h-7 w-7 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
         )}
       </button>
     </div>

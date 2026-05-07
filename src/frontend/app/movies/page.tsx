@@ -5,6 +5,7 @@ import Link from "next/link";
 import { movies } from "@/lib/movies";
 import { US_STATES, STATE_CODES } from "@/lib/us-locations";
 import Footer from "@/components/Footer";
+import MovieChatBot from "@/components/MovieChatBot";
 
 const ALL_GENRES = ["All", ...Array.from(new Set(movies.flatMap((m) => m.genre))).sort()];
 const ALL_RATINGS = ["All", "PG-13", "R", "PG", "NR"];
@@ -292,6 +293,7 @@ export default function MoviesPage() {
         </section>
       </main>
       <Footer />
+      <MovieChatBot pageContext="Movies browse page with filters for state, city, genre, and rating. Users can search movies, check showtimes, and book tickets." />
     </>
   );
 }
